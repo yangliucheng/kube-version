@@ -29,6 +29,7 @@ func Config(f string) {
 			fmt.Println("read line fail:",err)
 		}
 		strA := strings.Split(string(line), " ")
+		
 		fmt.Println(strA[0],"--",strA[1])
 	}
 }
