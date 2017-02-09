@@ -1,8 +1,10 @@
 package controller
 
 import (
+	"io/ioutil"
 	"strings"
 	"fmt"
+	"github.com/yangliucheng/easy_http"
 )
 
 type KubePods struct {
@@ -29,7 +31,9 @@ func (kubePods *KubePods) Create() {
 		fmt.Println("send request fail:",err)
 		return
 	}
-	fmt.Println(response.StatusCode)
+	byt ,_ := ioutil.ReadAll(response.Body)
+	fmt.Println("body:",string(byt))
+	// fmt.Println(response.StatusCode)
 }
 
 func (kubePods *KubePods) Get() {

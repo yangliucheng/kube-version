@@ -4,11 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"flag"
-)
-
-var (
-	kubeConf = flag.String("kubeConf", "conf/kubernetes.json", "configuration of kubernetes") 
 )
 
 type KubeConf struct {
@@ -16,7 +11,7 @@ type KubeConf struct {
 }
 
 func Config(f string) *KubeConf{
-	var conf *KubeConf
+	conf := new(KubeConf)
 	byt , err := ioutil.ReadFile(f)
 	if err != nil {
 		fmt.Println("read file fail:", err)
@@ -24,9 +19,8 @@ func Config(f string) *KubeConf{
 	}
 	err = json.Unmarshal(byt, conf)
 	if err != nil {
-		fmt.Println("Unmarshal conf fail:",err)
+		fmt.Println("Unmarshal KubeConf fail:",err)
 		return conf
 	}
-
 	return conf
 }
