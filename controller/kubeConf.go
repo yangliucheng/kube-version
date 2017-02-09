@@ -20,12 +20,12 @@ func Config(f string) *KubeConf{
 	byt , err := ioutil.ReadFile(f)
 	if err != nil {
 		fmt.Println("read file fail:", err)
-		return
+		return conf
 	}
-	err := json.Unmarshal(byt, conf)
+	err = json.Unmarshal(byt, conf)
 	if err != nil {
 		fmt.Println("Unmarshal conf fail:",err)
-		return
+		return conf
 	}
 
 	return conf

@@ -1,7 +1,8 @@
 package controller
 
 import (
-	"fmt"
+	// "fmt"
+	"strings"
 	"kube-version/router"
 	"github.com/yangliucheng/easy_http"
 )
@@ -10,11 +11,6 @@ import (
 
 type KubeClient struct {
 	RequestGen *easy_http.RequestGen
-}
-
-func init() {
-	KubeMap := make(easy_http.Handlers,0)
-	KubeMap["CreatePods"] = CreatePods
 }
 
 func newKubeCLient(kubeAddr string, routerArray easy_http.RouterArray) *KubeClient {
@@ -27,12 +23,16 @@ func newKubeCLient(kubeAddr string, routerArray easy_http.RouterArray) *KubeClie
 }
 
 func Run(kubeAddr string) {
+	KubeArray := make([]KubeInter,0)
 	kubeClient := newKubeCLient(kubeAddr, router.KubeRouter)
-	for _ , v := range KubeMap {
-		go v()
+	kubePod := NewKubePod(kubeClient)
+	KubeArray = append(KubeArray, kubePod)
+	
+	for _ , kube := range KubeArray {
+		go func(kube KubeInter) {
+			kube.Create()
+			kube.Get()
+			kube.Delete()
+		}(kube)
 	}
-}
-
-func (kube *KubeClient) CreatePods() {
-	fmt.Println("CreatePods")
 }
