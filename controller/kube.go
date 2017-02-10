@@ -29,16 +29,17 @@ func newKubeCLient(kubeAddr string, routerArray easy_http.RouterArray) *KubeClie
 
 func Run() {
 	kubeConf := Config(*kube_conf)
-	KubeArray := make([]KubeInter,0)
+	KubeMap:= NewOrderMap()
 	kubeClient := newKubeCLient(kubeConf.KubeAddr, router.KubeRouter)
 	kubePod := NewKubePod(kubeClient)
-	KubeArray = append(KubeArray, kubePod)
+	KubeMap.Set("CreatePods",kubePod)
 
-	for _ , kube := range KubeArray {
+	for _ , key := range KubeMap.Keys {
+		value := KubeMap.Segment[key]
 		go func(kube KubeInter) {
-			// kube.Create()
-			// kube.Get()
-			kube.Delete()
-		}(kube)
+			kube.Create(key.(string))
+			kube.Get(key.(string))
+			kube.Delete(key.(string))
+		}(value.(KubeInter))
 	}
 }

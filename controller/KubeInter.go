@@ -1,7 +1,7 @@
 package controller
 
 type KubeInter interface {
-	Create()
-	Get()
-	Delete()
+	Create(handler string)
+	Get(handler string)
+	Delete(handler string)
 }

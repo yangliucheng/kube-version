@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"io/ioutil"
 	"strings"
 	"fmt"
 	"github.com/yangliucheng/easy_http"
@@ -20,33 +19,30 @@ func NewKubePod(cli *KubeClient) *KubePods {
 	}
 }
 
-func (kubePods *KubePods) Create() {
+func (kubePods *KubePods) Create(handler string) {
 	body := strings.NewReader(kubePods.Yaml)
-	response, err := kubePods.KubeC.RequestGen.DoHttpRequest("CreatePods", easy_http.Mapstring{"namespace": "default"}, body, easy_http.Mapstring{"Content-type": "application/json"}, "")
+	response, err := kubePods.KubeC.RequestGen.DoHttpRequest(handler, easy_http.Mapstring{"namespace": "default"}, body, easy_http.Mapstring{"Content-type": "application/json"}, "")
 	if err != nil {
 		fmt.Println("send request fail:",err)
 		return
 	}
-	byt ,_ := ioutil.ReadAll(response.Body)
-	fmt.Println("body:",string(byt))
-	// fmt.Println(response.StatusCode)
+	VerifyStatusCode(kubePods.KubeC, handler, response.StatusCode)
 }
 
-func (kubePods *KubePods) Get() {
-	response, err := kubePods.KubeC.RequestGen.DoHttpRequest("GetPods", easy_http.Mapstring{"namespace": "default"}, nil, nil, "")
+func (kubePods *KubePods) Get(handler string) {
+	response, err := kubePods.KubeC.RequestGen.DoHttpRequest(handler, easy_http.Mapstring{"namespace": "default"}, nil, nil, "")
 	if err != nil {
 		fmt.Println("send request fail:",err)
 		return
 	}
-	byt ,_ := ioutil.ReadAll(response.Body)
-	fmt.Println("body:",string(byt))
+	VerifyStatusCode(kubePods.KubeC, handler, response.StatusCode)
 }
 
-func (kubePods *KubePods) Delete() {
-	response, err := kubePods.KubeC.RequestGen.DoHttpRequest("DeletePods", easy_http.Mapstring{"namespace": "default"}, nil, nil, "")
+func (kubePods *KubePods) Delete(handler string) {
+	response, err := kubePods.KubeC.RequestGen.DoHttpRequest(handler, easy_http.Mapstring{"namespace": "default"}, nil, nil, "")
 	if err != nil {
 		fmt.Println("send request fail:",err)
 		return
 	}
-	fmt.Println(response.StatusCode)
+	VerifyStatusCode(kubePods.KubeC, handler, response.StatusCode)
 }
