@@ -7,6 +7,6 @@ import (
 func VerifyStatusCode(kubeC *KubeClient, handler string, statusCode int) {
 	if statusCode == 404 {
 		router := kubeC.RequestGen.LookUrl(handler)
-		fmt.Println(router.Path)
+		fmt.Println(router.Method,router.Path)
 	}
 }

@@ -1,6 +1,7 @@
 package controller
 
 import (
+	// "fmt"
 	"flag"
 	"kube-version/router"
 	"github.com/yangliucheng/easy_http"
@@ -29,17 +30,19 @@ func newKubeCLient(kubeAddr string, routerArray easy_http.RouterArray) *KubeClie
 
 func Run() {
 	kubeConf := Config(*kube_conf)
-	KubeMap:= NewOrderMap()
+	// KubeMap:= NewOrderMap()
+	kubeArray := make([]KubeInter, 0)
 	kubeClient := newKubeCLient(kubeConf.KubeAddr, router.KubeRouter)
 	kubePod := NewKubePod(kubeClient)
-	KubeMap.Set("CreatePods",kubePod)
+	kubeNamespace := NewKubeNamespace(kubeClient)
+	// KubeMap.Set(kubePod, "CreatePods", "GetPods", "DeletePods")
+	kubeArray = append(kubeArray, kubePod, kubeNamespace)
 
-	for _ , key := range KubeMap.Keys {
-		value := KubeMap.Segment[key]
+	for _ , value := range kubeArray {
 		go func(kube KubeInter) {
-			kube.Create(key.(string))
-			kube.Get(key.(string))
-			kube.Delete(key.(string))
-		}(value.(KubeInter))
+			kube.Create()
+			kube.Get()
+			kube.Delete()
+		}(value)
 	}
 }
