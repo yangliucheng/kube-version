@@ -36,9 +36,9 @@ func Run() {
 
 	for _ , kube := range KubeArray {
 		go func(kube KubeInter) {
-			kube.Create()
+			// kube.Create()
 			// kube.Get()
-			// kube.Delete()
+			kube.Delete()
 		}(kube)
 	}
 }

@@ -13,11 +13,7 @@ type KubePods struct {
 }
 
 func NewKubePod(cli *KubeClient) *KubePods {
-	pods := `{"apiVersion":"v1","kind":"Pod",
-	        "metadata":{"name":"nginx"},
-	        "spec":{"containers":
-	        [{"name":"nginx","image":"nginx:latest","ports":[{"containerPort":80}]}]}}
-		`
+	pods := `{"apiVersion":"v1","kind":"Pod","metadata":{"name":"nginx"},"spec":{"containers":[{"name":"nginx","image":"nginx:latest","ports":[{"containerPort":80}]}]}}`
 	return &KubePods {
 		KubeC: cli,
 		Yaml : pods,
@@ -42,7 +38,8 @@ func (kubePods *KubePods) Get() {
 		fmt.Println("send request fail:",err)
 		return
 	}
-	fmt.Println(response.StatusCode)
+	byt ,_ := ioutil.ReadAll(response.Body)
+	fmt.Println("body:",string(byt))
 }
 
 func (kubePods *KubePods) Delete() {
