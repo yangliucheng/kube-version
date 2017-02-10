@@ -37,6 +37,7 @@ func (kubeNamespace *KubeNamespace) Get() {
 		fmt.Println("send request fail:",err)
 		return
 	}
+	VerifyStatusCode(kubeNamespace.kubeC, handler, response.StatusCode)
 	handler = "GetNamespace"
 	response, err = kubeNamespace.kubeC.RequestGen.DoHttpRequest(handler, easy_http.Mapstring{"name":"test"}, nil, nil, "")
 	if err != nil {

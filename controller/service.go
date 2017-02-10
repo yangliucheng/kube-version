@@ -12,15 +12,15 @@ type KubeService struct {
 }
 
 func NewKubeService(cli *KubeClient) *KubeService {
-	pods := `{"apiVersion":"v1","kind":"Pod","metadata":{"name":"nginx"},"spec":{"containers":[{"name":"nginx","image":"nginx:latest","ports":[{"containerPort":80}]}]}}`
+	service := `{"kind":"Service","apiVersion":"v1","metadata":{"name":"nginx-service-test","labels":{"run":"nginx-service"}},"spec":{"ports":[{"port":80,"protocol":"TCP"}],"selector":{"run":"nginx-service"}}}`
 	return &KubeService {
 		kubeC: cli,
-		yaml : pods,
+		yaml : service,
 	}
 }
 
 func (kubeService *KubeService) Create() {
-	handler := "CreatePods"
+	handler := "CreateService"
 	body := strings.NewReader(kubeService.yaml)
 	response, err := kubeService.kubeC.RequestGen.DoHttpRequest(handler, easy_http.Mapstring{"namespace": "default"}, body, easy_http.Mapstring{"Content-type": "application/json"}, "")
 	if err != nil {
@@ -31,8 +31,15 @@ func (kubeService *KubeService) Create() {
 }
 
 func (kubeService *KubeService) Get() {
-	handler := "GetPods"
+	handler := "GetServices"
 	response, err := kubeService.kubeC.RequestGen.DoHttpRequest(handler, easy_http.Mapstring{"namespace": "default"}, nil, nil, "")
+	if err != nil {
+		fmt.Println("send request fail:",err)
+		return
+	}
+	VerifyStatusCode(kubeService.kubeC, handler, response.StatusCode)
+	handler = "GetService"
+	response, err = kubeService.kubeC.RequestGen.DoHttpRequest(handler, easy_http.Mapstring{"namespace": "default","name":"nginx-service-test"}, nil, nil, "")
 	if err != nil {
 		fmt.Println("send request fail:",err)
 		return
@@ -41,8 +48,8 @@ func (kubeService *KubeService) Get() {
 }
 
 func (kubeService *KubeService) Delete() {
-	handler := "DeletePods"
-	response, err := kubeService.kubeC.RequestGen.DoHttpRequest(handler, easy_http.Mapstring{"namespace": "default"}, nil, nil, "")
+	handler := "DeleteService"
+	response, err := kubeService.kubeC.RequestGen.DoHttpRequest(handler, easy_http.Mapstring{"namespace": "default","name":"nginx-service-test"}, nil, nil, "")
 	if err != nil {
 		fmt.Println("send request fail:",err)
 		return
