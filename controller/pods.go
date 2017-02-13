@@ -27,7 +27,7 @@ func (kubePods *KubePods) Create() {
 		fmt.Println("send request fail:",err)
 		return
 	}
-	VerifyStatusCode(kubePods.kubeC, handler, response.StatusCode)
+	VerifyStatusCode(kubePods.kubeC, handler, response.StatusCode, err)
 }
 
 func (kubePods *KubePods) Get() {
@@ -37,7 +37,7 @@ func (kubePods *KubePods) Get() {
 		fmt.Println("send request fail:",err)
 		return
 	}
-	VerifyStatusCode(kubePods.kubeC, handler, response.StatusCode)
+	VerifyStatusCode(kubePods.kubeC, handler, response.StatusCode, err)
 }
 
 func (kubePods *KubePods) Delete() {
@@ -47,5 +47,5 @@ func (kubePods *KubePods) Delete() {
 		fmt.Println("send request fail:",err)
 		return
 	}
-	VerifyStatusCode(kubePods.kubeC, handler, response.StatusCode)
+	VerifyStatusCode(kubePods.kubeC, handler, response.StatusCode, err)
 }

@@ -27,7 +27,7 @@ func (kubeService *KubeService) Create() {
 		fmt.Println("send request fail:",err)
 		return
 	}
-	VerifyStatusCode(kubeService.kubeC, handler, response.StatusCode)
+	VerifyStatusCode(kubeService.kubeC, handler, response.StatusCode, err)
 }
 
 func (kubeService *KubeService) Get() {
@@ -37,14 +37,14 @@ func (kubeService *KubeService) Get() {
 		fmt.Println("send request fail:",err)
 		return
 	}
-	VerifyStatusCode(kubeService.kubeC, handler, response.StatusCode)
+	VerifyStatusCode(kubeService.kubeC, handler, response.StatusCode, err)
 	handler = "GetService"
 	response, err = kubeService.kubeC.RequestGen.DoHttpRequest(handler, easy_http.Mapstring{"namespace": "default","name":"nginx-service-test"}, nil, nil, "")
 	if err != nil {
 		fmt.Println("send request fail:",err)
 		return
 	}
-	VerifyStatusCode(kubeService.kubeC, handler, response.StatusCode)
+	VerifyStatusCode(kubeService.kubeC, handler, response.StatusCode, err)
 }
 
 func (kubeService *KubeService) Delete() {
@@ -54,5 +54,5 @@ func (kubeService *KubeService) Delete() {
 		fmt.Println("send request fail:",err)
 		return
 	}
-	VerifyStatusCode(kubeService.kubeC, handler, response.StatusCode)
+	VerifyStatusCode(kubeService.kubeC, handler, response.StatusCode, err)
 }

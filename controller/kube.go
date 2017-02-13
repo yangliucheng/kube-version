@@ -1,7 +1,10 @@
 package controller
 
 import (
-	// "fmt"
+	"encoding/json"
+	"io/ioutil"
+	"net/http"
+	"kube-version/model"
 	"flag"
 	"kube-version/router"
 	"github.com/yangliucheng/easy_http"
@@ -16,14 +19,27 @@ func init() {
 }
 
 type KubeClient struct {
-	RequestGen *easy_http.RequestGen
+	KubeExcel 	*model.KubeExcel
+	RequestGen 	*easy_http.RequestGen
 }
 
 func newKubeCLient(kubeAddr string, routerArray easy_http.RouterArray) *KubeClient {
-
+	excel := model.Excel {
+		Name : "Name",
+		Version : "Version",
+		Status 	: "Status",
+		Path : "Path",
+		Method 	: "Method",
+		StatusContent : "StatusContent",
+		Case : "Case",
+	}
+	path := "/home/yang/test.xlsx"
+	sheet := "kube"
+	kubeExcel := model.NewKubeExcel(path, sheet)
+	kubeExcel.Write(path,sheet, &excel)
 	requestGen := easy_http.NewRequestGen(kubeAddr, routerArray)
-
 	return &KubeClient{
+		KubeExcel : kubeExcel,
 		RequestGen: requestGen,
 	}
 }
@@ -43,5 +59,22 @@ func Run() {
 			kube.Get()
 			kube.Delete()
 		}(value)
+	}
+}
+
+func (kubeClient *KubeClient) PrintExcel(response *http.Response, handler string) {
+
+	if response.StatusCode == 404 {
+		kubeBody := new(KubeBody)
+		byt , _ := ioutil.ReadAll(response.Body)
+		json.Unmarshal(byt, kubeBody)
+		excel := model.Excel{}
+		excel.Name = handler
+		excel.Version = "1.3.5"
+		excel.Status = kubeBody.Status
+		excel.Path = response.Request.URL.String()
+		excel.Method = response.Request.Method
+		excel.StatusContent = response.Status
+		excel.Case = kubeBody.Message
 	}
 }
