@@ -1,58 +1,73 @@
 package controller
 
-// import (
-// 	"strings"
-// 	"fmt"
-// 	"github.com/yangliucheng/easy_http"
-// )
+import (
+	"strings"
+	"fmt"
+	"github.com/yangliucheng/easy_http"
+)
 
-// type KubeConfigMap struct {
-// 	kubeC *KubeClient
-// 	yaml string
-// }
+const (
+	create 	string = "CreateNamespacedConfigMap"
+	get 	string = "ReadNamespacedConfigMap"
+	gets 	string = "ListNamespacedConfigMap"
+	put 	string = "ReplaceNamespacedConfigMap"
+	delete 	string = "DeletecollectionNamespacedConfigMap"
 
-// func NewKubeService(cli *KubeClient) *KubeConfigMap {
-// 	configMap := `{"kind":"Service","apiVersion":"v1","metadata":{"name":"nginx-service-test","labels":{"run":"nginx-service"}},"spec":{"ports":[{"port":80,"protocol":"TCP"}],"selector":{"run":"nginx-service"}}}`
-// 	return &KubeConfigMap {
-// 		kubeC: cli,
-// 		yaml : configMap,
-// 	}
-// }
+)
 
-// func (kubeConfigMap *KubeConfigMap) Create() {
-// 	handler := "CreateConfigMap"
-// 	body := strings.NewReader(kubeConfigMap.yaml)
-// 	response, err := kubeConfigMap.kubeC.RequestGen.DoHttpRequest(handler, easy_http.Mapstring{"namespace": "default"}, body, easy_http.Mapstring{"Content-type": "application/json"}, "")
-// 	if err != nil {
-// 		fmt.Println("send request fail:",err)
-// 		return
-// 	}
-// 	VerifyStatusCode(kubeConfigMap.kubeC, handler, response.StatusCode, err)
-// }
+type KubeConfigMap struct {
+	kubeC *KubeClient
+	yaml string
+}
 
-// func (kubeConfigMap *KubeConfigMap) Get() {
-// 	handler := "GetConfigMap"
-// 	response, err := kubeConfigMap.kubeC.RequestGen.DoHttpRequest(handler, easy_http.Mapstring{"namespace": "default"}, nil, nil, "")
-// 	if err != nil {
-// 		fmt.Println("send request fail:",err)
-// 		return
-// 	}
-// 	VerifyStatusCode(kubeConfigMap.kubeC, handler, response.StatusCode, err)
-// 	handler = "GetService"
-// 	response, err = kubeConfigMap.kubeC.RequestGen.DoHttpRequest(handler, easy_http.Mapstring{"namespace": "default","name":"nginx-service-test"}, nil, nil, "")
-// 	if err != nil {
-// 		fmt.Println("send request fail:",err)
-// 		return
-// 	}
-// 	VerifyStatusCode(kubeConfigMap.kubeC, handler, response.StatusCode, err)
-// }
+func NewKubeConfigMap(cli *KubeClient) *KubeConfigMap {
+	configMap := `{"kind":"ConfigMap","apiVersion":"v1","metadata":{"creationTimestamp":"2016-02-18T19:14:38Z","name":"example-config","namespace":"default"},"data":{"example.property.1":"hello","example.property.2":"world"}}`
+	return &KubeConfigMap {
+		kubeC: cli,
+		yaml : configMap,
+	}
+}
 
-// func (kubeConfigMap *KubeConfigMap) Delete() {
-// 	handler := "DeleteConfigMap"
-// 	response, err := kubeConfigMap.kubeC.RequestGen.DoHttpRequest(handler, easy_http.Mapstring{"namespace": "default","name":"nginx-service-test"}, nil, nil, "")
-// 	if err != nil {
-// 		fmt.Println("send request fail:",err)
-// 		return
-// 	}
-// 	VerifyStatusCode(kubeConfigMap.kubeC, handler, response.StatusCode, err)
-// }
+func (kubeConfigMap *KubeConfigMap) Create() {
+	body := strings.NewReader(kubeConfigMap.yaml)
+	response, err := kubeConfigMap.kubeC.RequestGen.DoHttpRequest(create, easy_http.Mapstring{"namespace": "default"}, body, easy_http.Mapstring{"Content-type": "application/json"}, "")
+	if err != nil {
+		fmt.Println("send request fail:",err)
+		return
+	}
+	kubeConfigMap.kubeC.PrintExcel(response, create)
+}
+
+func (kubeConfigMap *KubeConfigMap) Get() {
+	response, err := kubeConfigMap.kubeC.RequestGen.DoHttpRequest(get, easy_http.Mapstring{"namespace": "default","name":"example-config"}, nil, nil, "")
+	if err != nil {
+		fmt.Println("send request fail:",err)
+		return
+	}
+	kubeConfigMap.kubeC.PrintExcel(response, get)
+	response, err = kubeConfigMap.kubeC.RequestGen.DoHttpRequest(gets, easy_http.Mapstring{"namespace": "default"}, nil, nil, "")
+	if err != nil {
+		fmt.Println("send request fail:",err)
+		return
+	}
+	kubeConfigMap.kubeC.PrintExcel(response, gets)
+}
+
+func (kubeConfigMap *KubeConfigMap) Put() {
+	body := strings.NewReader(kubeConfigMap.yaml)
+	response, err := kubeConfigMap.kubeC.RequestGen.DoHttpRequest(put, easy_http.Mapstring{"namespace": "default","name":"example-config"}, body, easy_http.Mapstring{"Content-type": "application/json"}, "")
+	if err != nil {
+		fmt.Println("send request fail:",err)
+		return
+	}
+	kubeConfigMap.kubeC.PrintExcel(response, put)
+}
+
+func (kubeConfigMap *KubeConfigMap) Delete() {
+	response, err := kubeConfigMap.kubeC.RequestGen.DoHttpRequest(delete, easy_http.Mapstring{"namespace": "default","name":"example-config"}, nil, nil, "")
+	if err != nil {
+		fmt.Println("send request fail:",err)
+		return
+	}
+	kubeConfigMap.kubeC.PrintExcel(response, delete)
+}

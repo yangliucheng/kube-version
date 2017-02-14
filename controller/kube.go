@@ -54,15 +54,17 @@ func newKubeCLient(routerArray easy_http.RouterArray) *KubeClient {
 func Run() {
 	kubeArray := make([]KubeInter, 0)
 	kubeClient := newKubeCLient(router.KubeRouter)
-	kubePod := NewKubePod(kubeClient)
-	kubeNamespace := NewKubeNamespace(kubeClient)
-	kubeService := NewKubeService(kubeClient)
-	kubeArray = append(kubeArray, kubePod, kubeNamespace,kubeService)
+	// kubePod := NewKubePod(kubeClient)
+	// kubeNamespace := NewKubeNamespace(kubeClient)
+	// kubeService := NewKubeService(kubeClient)
+	kubeConfigMap := NewKubeConfigMap(kubeClient)
+	kubeArray = append(kubeArray, kubeConfigMap)
 
 	for _ , value := range kubeArray {
 		go func(kube KubeInter) {
 			kube.Create()
 			kube.Get()
+			kube.Put()
 			kube.Delete()
 		}(value)
 	}
