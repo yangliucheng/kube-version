@@ -27,7 +27,7 @@ func (kubeNamespace *KubeNamespace) Create() {
 		fmt.Println("send request fail:",err)
 		return
 	}
-	VerifyStatusCode(kubeNamespace.kubeC, handler, response.StatusCode, err)
+	kubeNamespace.kubeC.PrintExcel(response, handler)
 }
 
 func (kubeNamespace *KubeNamespace) Get() {
@@ -37,14 +37,14 @@ func (kubeNamespace *KubeNamespace) Get() {
 		fmt.Println("send request fail:",err)
 		return
 	}
-	VerifyStatusCode(kubeNamespace.kubeC, handler, response.StatusCode, err)
+	kubeNamespace.kubeC.PrintExcel(response, handler)
 	handler = "GetNamespace"
 	response, err = kubeNamespace.kubeC.RequestGen.DoHttpRequest(handler, easy_http.Mapstring{"name":"test"}, nil, nil, "")
 	if err != nil {
 		fmt.Println("send request fail:",err)
 		return
 	}
-	VerifyStatusCode(kubeNamespace.kubeC, handler, response.StatusCode, err)
+	kubeNamespace.kubeC.PrintExcel(response, handler)
 }
 
 func (kubeNamespace *KubeNamespace) Delete() {
@@ -54,5 +54,5 @@ func (kubeNamespace *KubeNamespace) Delete() {
 		fmt.Println("send request fail:",err)
 		return
 	}
-	VerifyStatusCode(kubeNamespace.kubeC, handler, response.StatusCode, err)
+	kubeNamespace.kubeC.PrintExcel(response, handler)
 }

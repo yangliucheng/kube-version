@@ -7,8 +7,15 @@ import (
 )
 
 type KubeConf struct {
-	KubeAddr	string 	`json:"kubeAddr"`
+	KubeVersion string  `json:"kubeVersion"`
+	KubeAddr	string  `json:"kubeAddr"`
+	Results 	Result  `json:"result"`
 }
+type Result struct {
+	File   string `json:"file"`
+	Sheet  string `json:"sheet"`
+}
+
 
 func Config(f string) *KubeConf{
 	conf := new(KubeConf)

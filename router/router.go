@@ -9,7 +9,7 @@ import (
 var KubeRouter = easy_http.RouterArray{
 		// pod
 		{Handler : "CreatePods", Method : "POST", Path : "/api/v1/namespaces/:namespace/pods"},
-		{Handler : "GetPods", Method : "GET", Path : "/api/v1/namespaces/:namespace/pods"},
+		{Handler : "GetPods", Method : "GET", Path : "/api/v1/namespaces/:namespace/pod"},
 		{Handler : "DeletePods", Method : "DELETE", Path : "/api/v1/namespaces/:namespace/pods"},
 
 		// namespace
