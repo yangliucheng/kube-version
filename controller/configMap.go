@@ -7,12 +7,12 @@ import (
 )
 
 const (
-	create 	string = "CreateNamespacedConfigMap"
-	get 	string = "ReadNamespacedConfigMap"
-	gets 	string = "ListNamespacedConfigMap"
-	put 	string = "ReplaceNamespacedConfigMap"
-	delete 	string = "DeletecollectionNamespacedConfigMap"
-
+	CREATECONFIGMAP 	string = "CreateNamespacedConfigMap"
+	GETCONFIGMAP 		string = "ReadNamespacedConfigMap"
+	GETCONFIGMAPS 		string = "ListNamespacedConfigMap"
+	UPDATECONFIGMAP 	string = "ReplaceNamespacedConfigMap"
+	DELETECONFIGMAP 	string = "DeleteNamespacedConfigMap"
+	DELETECONFIGMAPS 	string = "DeletecollectionNamespacedConfigMap"	
 )
 
 type KubeConfigMap struct {
@@ -28,46 +28,46 @@ func NewKubeConfigMap(cli *KubeClient) *KubeConfigMap {
 	}
 }
 
-func (kubeConfigMap *KubeConfigMap) Create() {
+func (kubeConfigMap *KubeConfigMap) Create(out bool) {
 	body := strings.NewReader(kubeConfigMap.yaml)
-	response, err := kubeConfigMap.kubeC.RequestGen.DoHttpRequest(create, easy_http.Mapstring{"namespace": "default"}, body, easy_http.Mapstring{"Content-type": "application/json"}, "")
+	response, err := kubeConfigMap.kubeC.RequestGen.DoHttpRequest(CREATECONFIGMAP, easy_http.Mapstring{"namespace": "default"}, body, easy_http.Mapstring{"Content-type": "application/json"}, "")
 	if err != nil {
 		fmt.Println("send request fail:",err)
 		return
 	}
-	kubeConfigMap.kubeC.PrintExcel(response, create)
+	kubeConfigMap.kubeC.PrintExcel(response, CREATECONFIGMAP, out)
 }
 
-func (kubeConfigMap *KubeConfigMap) Get() {
-	response, err := kubeConfigMap.kubeC.RequestGen.DoHttpRequest(get, easy_http.Mapstring{"namespace": "default","name":"example-config"}, nil, nil, "")
+func (kubeConfigMap *KubeConfigMap) Get(out bool) {
+	response, err := kubeConfigMap.kubeC.RequestGen.DoHttpRequest(GETCONFIGMAP, easy_http.Mapstring{"namespace": "default","name":"example-config"}, nil, nil, "")
 	if err != nil {
 		fmt.Println("send request fail:",err)
 		return
 	}
-	kubeConfigMap.kubeC.PrintExcel(response, get)
-	response, err = kubeConfigMap.kubeC.RequestGen.DoHttpRequest(gets, easy_http.Mapstring{"namespace": "default"}, nil, nil, "")
+	kubeConfigMap.kubeC.PrintExcel(response, GETCONFIGMAP, out)
+	response, err = kubeConfigMap.kubeC.RequestGen.DoHttpRequest(GETCONFIGMAPS, easy_http.Mapstring{"namespace": "default"}, nil, nil, "")
 	if err != nil {
 		fmt.Println("send request fail:",err)
 		return
 	}
-	kubeConfigMap.kubeC.PrintExcel(response, gets)
+	kubeConfigMap.kubeC.PrintExcel(response, GETCONFIGMAPS, out)
 }
 
-func (kubeConfigMap *KubeConfigMap) Put() {
+func (kubeConfigMap *KubeConfigMap) Put(out bool) {
 	body := strings.NewReader(kubeConfigMap.yaml)
-	response, err := kubeConfigMap.kubeC.RequestGen.DoHttpRequest(put, easy_http.Mapstring{"namespace": "default","name":"example-config"}, body, easy_http.Mapstring{"Content-type": "application/json"}, "")
+	response, err := kubeConfigMap.kubeC.RequestGen.DoHttpRequest(UPDATECONFIGMAP, easy_http.Mapstring{"namespace": "default","name":"example-config"}, body, easy_http.Mapstring{"Content-type": "application/json"}, "")
 	if err != nil {
 		fmt.Println("send request fail:",err)
 		return
 	}
-	kubeConfigMap.kubeC.PrintExcel(response, put)
+	kubeConfigMap.kubeC.PrintExcel(response, UPDATECONFIGMAP, out)
 }
 
-func (kubeConfigMap *KubeConfigMap) Delete() {
-	response, err := kubeConfigMap.kubeC.RequestGen.DoHttpRequest(delete, easy_http.Mapstring{"namespace": "default","name":"example-config"}, nil, nil, "")
+func (kubeConfigMap *KubeConfigMap) Delete(out bool) {
+	response, err := kubeConfigMap.kubeC.RequestGen.DoHttpRequest(DELETECONFIGMAP, easy_http.Mapstring{"namespace": "default","name":"example-config"}, nil, nil, "")
 	if err != nil {
 		fmt.Println("send request fail:",err)
 		return
 	}
-	kubeConfigMap.kubeC.PrintExcel(response, delete)
+	kubeConfigMap.kubeC.PrintExcel(response, DELETECONFIGMAP, out)
 }

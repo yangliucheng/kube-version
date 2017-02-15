@@ -19,7 +19,7 @@ func NewKubePod(cli *KubeClient) *KubePods {
 	}
 }
 
-func (kubePods *KubePods) Create() {
+func (kubePods *KubePods) Create(out bool) {
 	handler := "CreatePods"
 	body := strings.NewReader(kubePods.yaml)
 	response, err := kubePods.kubeC.RequestGen.DoHttpRequest(handler, easy_http.Mapstring{"namespace": "default"}, body, easy_http.Mapstring{"Content-type": "application/json"}, "")
@@ -27,25 +27,25 @@ func (kubePods *KubePods) Create() {
 		fmt.Println("send request fail:",err)
 		return
 	}
-	kubePods.kubeC.PrintExcel(response, handler)
+	kubePods.kubeC.PrintExcel(response, handler, out)
 }
 
-func (kubePods *KubePods) Get() {
+func (kubePods *KubePods) Get(out bool) {
 	handler := "GetPods"
 	response, err := kubePods.kubeC.RequestGen.DoHttpRequest(handler, easy_http.Mapstring{"namespace": "default"}, nil, nil, "")
 	if err != nil {
 		fmt.Println("send request fail:",err)
 		return
 	}
-	kubePods.kubeC.PrintExcel(response, handler)
+	kubePods.kubeC.PrintExcel(response, handler, out)
 }
 
-func (kubePods *KubePods) Delete() {
+func (kubePods *KubePods) Delete(out bool) {
 	handler := "DeletePods"
 	response, err := kubePods.kubeC.RequestGen.DoHttpRequest(handler, easy_http.Mapstring{"namespace": "default"}, nil, nil, "")
 	if err != nil {
 		fmt.Println("send request fail:",err)
 		return
 	}
-	kubePods.kubeC.PrintExcel(response, handler)
+	kubePods.kubeC.PrintExcel(response, handler, out)
 }

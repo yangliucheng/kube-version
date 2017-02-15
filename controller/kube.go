@@ -21,7 +21,8 @@ func init() {
 }
 
 type KubeClient struct {
-	RwMutex       *sync.RWMutex
+	RwMutex     *sync.RWMutex
+	KubeMap 	*model.OrderMap
 	KubeConf 	*KubeConf
 	KubeExcel 	*model.KubeExcel
 	RequestGen 	*easy_http.RequestGen
@@ -43,8 +44,10 @@ func newKubeCLient(routerArray easy_http.RouterArray) *KubeClient {
 	kubeExcel.Write(kubeConf.Results.File, kubeConf.Results.Sheet, &excel)
 	requestGen := easy_http.NewRequestGen(kubeConf.KubeAddr, routerArray)
 	rwMutex := new(sync.RWMutex)
+	kubeMap := model.NewOrderMap()
 	return &KubeClient{
 		RwMutex   : rwMutex,
+		KubeMap   : kubeMap,
 		KubeConf  : kubeConf,
 		KubeExcel : kubeExcel,
 		RequestGen: requestGen,
@@ -52,25 +55,37 @@ func newKubeCLient(routerArray easy_http.RouterArray) *KubeClient {
 }
 
 func Run() {
-	kubeArray := make([]KubeInter, 0)
 	kubeClient := newKubeCLient(router.KubeRouter)
 	// kubePod := NewKubePod(kubeClient)
 	// kubeNamespace := NewKubeNamespace(kubeClient)
 	// kubeService := NewKubeService(kubeClient)
 	kubeConfigMap := NewKubeConfigMap(kubeClient)
-	kubeArray = append(kubeArray, kubeConfigMap)
-
-	for _ , value := range kubeArray {
+	kubeClient.KubeMap.Set("configmap",kubeConfigMap)
+	kubeReplicaset := NewKubeKubeReplicaset(kubeClient)
+	kubeClient.KubeMap.Set("replicaset",kubeReplicaset)
+	kubeSecret := NewKubeSecret(kubeClient)
+	kubeClient.KubeMap.Set("secret",kubeSecret)
+	KubeRolebinding := NewKubeRolebinding(kubeClient)
+	kubeClient.KubeMap.Set("roleBinding",KubeRolebinding)
+	KubeRole := NewKubeRole(kubeClient)
+	kubeClient.KubeMap.Set("role",KubeRole)
+	KubeClusterRole := NewKubeClusterRole(kubeClient)
+	kubeClient.KubeMap.Set("clusterrole",KubeClusterRole)
+	for _ , value := range kubeClient.KubeMap.Keys {
 		go func(kube KubeInter) {
-			kube.Create()
-			kube.Get()
-			kube.Put()
-			kube.Delete()
-		}(value)
+			kube.Create(true)
+			kube.Get(true)
+			kube.Put(true)
+			kube.Delete(true)
+		}(kubeClient.KubeMap.Segment[value].(KubeInter))
 	}
 }
 
-func (kubeClient *KubeClient) PrintExcel(response *http.Response, handler string) {
+func (kubeClient *KubeClient) PrintExcel(response *http.Response, handler string, out bool) {
+
+	if !out {
+		return
+	}
 
 	kubeClient.RwMutex.Lock()
 
@@ -82,7 +97,7 @@ func (kubeClient *KubeClient) PrintExcel(response *http.Response, handler string
 	excel.Version = kubeClient.KubeConf.KubeVersion
 	excel.Status = kubeBody.Status
 	if strings.EqualFold(kubeBody.Status, "") {
-		excel.Status = "Succeed"
+		excel.Status = "Success"
 	}
 	excel.Path = response.Request.URL.String()
 	excel.Method = response.Request.Method
